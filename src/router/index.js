@@ -54,6 +54,9 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
   linkActiveClass: "my-router-link-active",
+  scrollBehavior(to, from, savePosition) {
+    return savePosition || { top: 0 };
+  },
 });
 
 export default router;
