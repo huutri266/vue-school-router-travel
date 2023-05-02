@@ -1,18 +1,31 @@
+<!-- eslint-disable vue/valid-v-for -->
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <h1>All destinations</h1>
+    <div class="destinations">
+      <router-link
+        v-for="des in destinations"
+        :key="des.id"
+        :to="{
+          name: 'destination.show',
+          params: { id: des.id, slug: des.slug },
+        }"
+      >
+        <h2>{{ des.name }}</h2>
+        <img :src="`/images/${des.image}`" :alt="des.name" />
+      </router-link>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import sourceData from "@/data.json";
 
 export default {
-  name: "HomeView",
-  components: {
-    HelloWorld,
+  data() {
+    return {
+      destinations: sourceData.destinations,
+    };
   },
 };
 </script>

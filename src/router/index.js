@@ -1,26 +1,59 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import dataSource from "@/data.json";
 
 const routes = [
   {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () =>
+      import(/* webpackChuckName: "home" */ "@/views/NotFound.vue"),
+  },
+  {
     path: "/",
     name: "home",
-    component: HomeView,
+    component: () =>
+      import(/* webpackChuckName: "home" */ "@/views/HomeView.vue"),
   },
   {
     path: "/about",
     name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+      import(/* webpackChuckName: "home" */ "../views/AboutView.vue"),
+  },
+  {
+    path: "/destination/:id/:slug",
+    name: "destination.show",
+    component: () => import("../views/DestinationShow.vue"),
+    props: (route) => ({ ...route.params, id: parseInt(route.params.id) }),
+    beforeEnter: (to) => {
+      const exits = dataSource.destinations.find(
+        (destination) => destination.id === parseInt(to.params.id)
+      );
+      if (!exits) {
+        return {
+          name: "NotFound",
+          // to keep this url
+          params: { pathMatch: to.path.split("/").slice(1) },
+          query: to.query,
+          hash: to.hash,
+        };
+      }
+    },
+    children: [
+      {
+        path: ":experienceSlug",
+        name: "experience.show",
+        component: () => import("../views/ExperiencesShow.vue"),
+        props: (route) => ({ ...route.params, id: parseInt(route.params.id) }),
+      },
+    ],
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+  linkActiveClass: "my-router-link-active",
 });
 
 export default router;
